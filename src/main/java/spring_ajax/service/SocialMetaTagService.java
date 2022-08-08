@@ -12,7 +12,7 @@ import java.io.IOException;
 @Service
 public class SocialMetaTagService {
 
-    private static Logger log = LoggerFactory.getLogger(SocialMetaTagService.class);
+    private static final Logger log = LoggerFactory.getLogger(SocialMetaTagService.class);
 
     public SocialMetaTag getSocialMetaTagByUrl(String url){
         SocialMetaTag tag = getTwitterCardByURL(url);
@@ -24,9 +24,12 @@ public class SocialMetaTagService {
     private SocialMetaTag getOpenGraphByURL(String url){
         SocialMetaTag tag = new SocialMetaTag();
         try {
-            Document doc = Jsoup.connect(url).userAgent("Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
-                    .referrer("http://www.google.com")
-                    .header("Content-Type","application/x-www-form-urlencoded")
+            Document doc = Jsoup.connect(url)
+                    .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:49.0) Gecko/20100101 Firefox/49.0")
+                    .ignoreHttpErrors(true)
+                    .followRedirects(true)
+                    .ignoreContentType(true)
+                    .timeout(100000)
                     .get();
             tag.setTitle(doc.head().select("meta[property=og:title]").attr("content"));
             tag.setSite(doc.head().select("meta[property=og:site_name]").attr("content"));
@@ -42,9 +45,12 @@ public class SocialMetaTagService {
     private SocialMetaTag getTwitterCardByURL(String url){
         SocialMetaTag tag = new SocialMetaTag();
         try {
-            Document doc = Jsoup.connect(url).userAgent("Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
-                    .referrer("http://www.google.com")
-                    .header("Content-Type","application/x-www-form-urlencoded")
+            Document doc = Jsoup.connect(url)
+                    .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:49.0) Gecko/20100101 Firefox/49.0")
+                    .ignoreHttpErrors(true)
+                    .followRedirects(true)
+                    .ignoreContentType(true)
+                    .timeout(100000)
                     .get();
             tag.setTitle(doc.head().select("meta[name=twitter:title]").attr("content"));
             tag.setSite(doc.head().select("meta[name=twitter:site]").attr("content"));
