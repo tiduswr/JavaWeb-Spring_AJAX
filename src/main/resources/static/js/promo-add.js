@@ -1,3 +1,53 @@
+function resetPromoFormFieldsOnSubmit(){
+    $("#form-add-promo").each(function(){
+        this.reset();
+    });
+    $("#linkImagem").attr("src", "/images/promo-dark.png");
+    $("#site").text("")
+}
+function resetPromoFormFieldsOnChange(){
+    $("#alert").removeClass("alert alert-danger alert-success").text("");
+    $("#titulo").val("");
+    $("#site").text("");
+    $("#linkImagem").attr("src", "");
+}
+function promoAddPageLoaderHide(){
+    $("#loader-form").fadeOut(800, function(){
+        $("#form-add-promo").fadeIn(250);
+        $("#loader-form").removeClass("loader");
+    });
+}
+function promoAddLoaderShow(){
+    $("#form-add-promo").hide();
+    $("#loader-form").addClass("loader").show();
+}
+function loadPromoLinkMetaInfo(data){
+    $("#titulo").val(data.title);
+    $("#site").text(data.site);
+    $("#linkImagem").attr("src", data.image);
+}
+function configPromoAddErrorFields(xhr){
+    var errors = $.parseJSON(xhr.responseText);
+    $.each(errors, function(key, val){
+        $("#"+key).addClass("is-invalid");
+        $("#error-"+key)
+            .addClass("invalid-feedback")
+            .append("<span class='error-span'>" + val + "</span>");
+    })
+}
+function cleanFieldErrorsPromoAddPage(){
+    //Removendo mensagens de erro
+    $("span").closest(".error-span").remove();
+
+    //Remover as Bordas vermelhas
+    $("#categoria").removeClass("is-invalid");
+    $("#preco").removeClass("is-invalid");
+    $("#linkPromocao").removeClass("is-invalid");
+    $("#titulo").removeClass("is-invalid");
+}
+
+
+
 //Faz submit do formulario
 $("#form-add-promo").submit(function(evt){
     //Bloq submit default operation
@@ -21,27 +71,30 @@ $("#form-add-promo").submit(function(evt){
         url: "/promocao/save",
         data: promo,
         beforeSend: function () {
-            $("#form-add-promo").hide();
-            $("#loader-form").addClass("loader").show();
+            cleanFieldErrorsPromoAddPage();
+            promoAddLoaderShow();
         },
         success: function(){
-            $("#form-add-promo").each(function(){
-                this.reset();
-            });
-            $("#linkImagem").attr("src", "/images/promo-dark.png");
-            $("#site").text("")
-
-            $("#alert").addClass("alert alert-success").text("OK! Promoção cadastrada com Sucesso!");
+            resetPromoFormFieldsOnSubmit();
+            $("#alert")
+                .removeClass("alert alert-danger")
+                .addClass("alert alert-success")
+                .text("OK! Promoção cadastrada com Sucesso!");
         },
         error: function(xhr){
             console.log("> error: ", xhr.responseText);
-            $("#alert").addClass("alert alert-danger").text("Não foi possivel salvar esta promoção!");
+            $("#alert")
+                .removeClass("alert alert-success")
+                .addClass("alert alert-danger")
+                .text("Não foi possivel salvar esta promoção!");
+        },
+        statusCode: {
+            422: function(xhr){
+                configPromoAddErrorFields(xhr);
+            }
         },
         complete: function(){
-            $("#loader-form").fadeOut(800, function(){
-                $("#form-add-promo").fadeIn(250);
-                $("#loader-form").removeClass("loader");
-            });
+            promoAddPageLoaderHide();
         }
     })
 
@@ -56,16 +109,12 @@ $('#linkPromocao').on('change', function(){
             url: "/meta/info?url=" + url,
             cache: true,
             beforeSend: function(){
-                $("#alert").removeClass("alert alert-danger alert-success").text("");
-                $("#titulo").val("");
-                $("#site").text("");
-                $("#linkImagem").attr("src", "");
-                $("#loader-img").addClass("loader")
+                resetPromoFormFieldsOnChange();
+                //Habilita loader da imagem
+                $("#loader-img").addClass("loader");
             },
             success: function(data){
-                $("#titulo").val(data.title);
-                $("#site").text(data.site);
-                $("#linkImagem").attr("src", data.image);
+                loadPromoLinkMetaInfo(data);
             },
             statusCode: {
                 404: function(){
@@ -78,6 +127,7 @@ $('#linkPromocao').on('change', function(){
                 $("#linkImagem").attr("src", "/images/promo-dark.png");
             },
             complete: function(){
+                //Desabilita loader da imagem
                 $("#loader-img").removeClass("loader");
             }
         });

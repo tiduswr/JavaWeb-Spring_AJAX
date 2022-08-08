@@ -3,6 +3,7 @@ package spring_ajax.domain;
 import org.springframework.format.annotation.NumberFormat;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -14,17 +15,24 @@ public class Promocao implements Serializable {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @NotBlank(message = "Um titulo é necessário!")
     @Column(name = "titulo", nullable = false)
     private String titulo;
+
+    @NotBlank(message = "Um link da promoção é necessário!")
     @Column(name = "link_promocao", nullable = false)
     private String linkPromocao;
+
     @Column(name = "site_promocao", nullable = false)
     private String site;
+
     @Column(name = "descricao")
     private String descricao;
+
     @Column(name = "link_imagem", nullable = false)
     private String linkImagem;
 
+    @NotNull(message = "Um preço é necessário!")
     @NumberFormat(style = NumberFormat.Style.CURRENCY, pattern = "#,##0.00")
     @Column(name = "preco_promocao", nullable = false)
     private BigDecimal preco;
@@ -35,6 +43,7 @@ public class Promocao implements Serializable {
     @Column(name = "data_cadastro", nullable = false)
     private LocalDate dtCadastro;
 
+    @NotNull(message = "Uma categoria é necessário!")
     @ManyToOne
     @JoinColumn(name = "categoria_fk")
     private Categoria categoria;
