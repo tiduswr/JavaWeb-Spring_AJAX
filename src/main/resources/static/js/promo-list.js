@@ -7,13 +7,32 @@ function loadByScrollBar(pageNumber){
         data: {
             page : pageNumber
         },
+        beforeSend: function(){
+            $("#loader-img").show();
+        },
         success: function(response){
-            $(".main-list").fadeIn(250, function(){
-                $(this).append(response)
-            });
+            if(response.length > 150){
+                $(".main-list").fadeIn(250, function(){
+                    $(this).append(response)
+                });
+            }else{
+                $("#fim-btn").show();
+                $("#loader-img").removeClass("loader");
+            }
+        },
+        error: function(xhr){
+            alert("Ops, ocorreu um erro: " + xhr.status + " - " + xhr.statusText)
+        },
+        complete: function(){
+            $("#loader-img").hide();
         }
     });
 }
+
+$(document).ready(function(){
+    $("#loader-img").hide();
+    $("#fim-btn").hide();
+});
 
 //Efeito infinite Scroll
 $(window).scroll(function(){
