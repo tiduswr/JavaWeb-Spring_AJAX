@@ -40,6 +40,13 @@ public class PromocaoController {
         return "promo-list";
     }
 
+    @PostMapping("/like/{id}")
+    public ResponseEntity<?> adicionarLikes(@PathVariable("id") Long id){
+        promoRepository.updateSomarLikes(id);
+        int likes = promoRepository.findLikesById(id);
+        return ResponseEntity.ok(likes);
+    }
+
     @GetMapping("/list/ajax")
     public String listarCards(@RequestParam(name = "page", defaultValue = "1") int page, ModelMap map){
         PageRequest pageRequest = PageRequest.of(page, 8, Sort.by(Sort.Direction.ASC, "dtCadastro"));
