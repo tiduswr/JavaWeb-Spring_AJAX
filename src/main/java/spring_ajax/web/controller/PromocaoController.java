@@ -47,6 +47,12 @@ public class PromocaoController {
         return ResponseEntity.ok(likes);
     }
 
+    @GetMapping("/site")
+    public ResponseEntity<?> autocompleteByTermo(@RequestParam("termo") String termo){
+        List<String> sites = promoRepository.findSitesByTermo(termo);
+        return ResponseEntity.ok(sites);
+    }
+
     @GetMapping("/list/ajax")
     public String listarCards(@RequestParam(name = "page", defaultValue = "1") int page, ModelMap map){
         PageRequest pageRequest = PageRequest.of(page, 8, Sort.by(Sort.Direction.ASC, "dtCadastro"));

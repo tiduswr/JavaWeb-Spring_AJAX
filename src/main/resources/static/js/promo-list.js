@@ -37,9 +37,8 @@ $(document).ready(function(){
 
 //Efeito infinite Scroll
 $(window).scroll(function(){
-    var scrollTop = $(this).scrollTop();
-    var conteudo = ($(document).height() - $(window).height()) - 1;
-    console.log("scrollTop: " + scrollTop + " | conteudo: " + conteudo);
+    var scrollTop = Math.ceil($(this).scrollTop());
+    var conteudo = (Math.ceil($(document).height()) - Math.ceil($(window).height()));
     if(scrollTop >= conteudo){
         pageNumber++;
         setTimeout(function(){loadByScrollBar(pageNumber)}, 200);
@@ -61,4 +60,20 @@ $(document).on("click", "button[id*='likes-btn-']", function(){
         }
     });
 
+});
+
+//Autocomplete
+$("#autocomplete-input").autocomplete({
+    source: function(request, response){
+        $.ajax({
+            method: "GET",
+            url: "/promocao/site",
+            data: {
+                termo: request.term
+            },
+            success: function(result){
+                response(result);
+            }
+        });
+    }
 });
