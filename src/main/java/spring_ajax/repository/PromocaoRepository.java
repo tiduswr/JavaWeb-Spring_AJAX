@@ -1,5 +1,8 @@
 package spring_ajax.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -10,6 +13,10 @@ import spring_ajax.domain.Promocao;
 import java.util.List;
 
 public interface PromocaoRepository extends JpaRepository<Promocao, Long> {
+
+    @Transactional(readOnly = true)
+    @Query("SELECT p FROM Promocao p WHERE p.site LIKE :site")
+    Page<Promocao> findBySite(@Param("site") String site, Pageable pageRequest);
 
     @Transactional(readOnly = false)
     @Modifying

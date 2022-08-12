@@ -1,6 +1,7 @@
 package spring_ajax.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -53,10 +54,26 @@ public class PromocaoController {
         return ResponseEntity.ok(sites);
     }
 
+    @GetMapping("/site/list")
+    public String listarPorSite(@RequestParam("site") String site, ModelMap map){
+        PageRequest pageRequest = PageRequest.of(0, 8, Sort.by(Sort.Direction.ASC, "dtCadastro"));
+        map.addAttribute("promocoes", promoRepository.findBySite(site, pageRequest));
+        return "promo-card";
+    }
+
     @GetMapping("/list/ajax")
-    public String listarCards(@RequestParam(name = "page", defaultValue = "1") int page, ModelMap map){
-        PageRequest pageRequest = PageRequest.of(page, 8, Sort.by(Sort.Direction.ASC, "dtCadastro"));
-        map.addAttribute("promocoes", promoRepository.findAll(pageRequest));
+    public String listarCards(@RequestParam(name = "page", defaultValue = "1") int page,
+                              @RequestParam(name = "site", defaultValue = "") String site,
+                              ModelMap map){
+        PageRequest pageRequest = PageRequest.of(page, 8,
+                Sort.by(Sort.Direction.ASC, "dtCadastro"));
+        if(site.isEmpty()){
+            map.addAttribute("promocoes",
+                    promoRepository.findAll(pageRequest));
+        }else{
+            map.addAttribute("promocoes",
+                    promoRepository.findBySite(site,pageRequest));
+        }
         return "promo-card";
     }
 
