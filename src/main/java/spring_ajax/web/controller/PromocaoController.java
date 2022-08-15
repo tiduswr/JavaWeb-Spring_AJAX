@@ -13,7 +13,9 @@ import spring_ajax.domain.Categoria;
 import spring_ajax.domain.Promocao;
 import spring_ajax.repository.CategoriaRepository;
 import spring_ajax.repository.PromocaoRepository;
+import spring_ajax.service.PromocaoDataTablesService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -32,6 +34,17 @@ public class PromocaoController {
     @GetMapping("/add")
     public String abrirCadastro(){
         return "promo-add";
+    }
+
+    @GetMapping("/tabela")
+    public String showTabela(){
+        return "promo-datatables";
+    }
+
+    @GetMapping("/datatables/server")
+    public ResponseEntity<?> datatables(HttpServletRequest request){
+        Map<String, Object> data = new PromocaoDataTablesService().execute(promoRepository, request);
+        return ResponseEntity.ok(data);
     }
 
     @GetMapping("/list")

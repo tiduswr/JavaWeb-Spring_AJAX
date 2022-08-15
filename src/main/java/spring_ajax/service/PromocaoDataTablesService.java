@@ -1,8 +1,10 @@
 package spring_ajax.service;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import spring_ajax.domain.Promocao;
 import spring_ajax.repository.PromocaoRepository;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +20,7 @@ public class PromocaoDataTablesService {
 
     public Map<String, Object> execute(PromocaoRepository repository, HttpServletRequest request){
 
+        //Pegando informações datatable
         int start = Integer.parseInt(request.getParameter("start"));
         int length = Integer.parseInt(request.getParameter("length"));
         int draw = Integer.parseInt(request.getParameter("draw"));
@@ -26,14 +29,22 @@ public class PromocaoDataTablesService {
         Map<String, Object> json = new LinkedHashMap<>();
         Sort.Direction direction = orderBy(request);
 
+        //Regras de paginação
         Pageable pageable = PageRequest.of(current, length, direction, colProperties);
 
-        json.put("draw", null);
-        json.put("recordsTotal", 0);
-        json.put("recordsFiltered", 0);
-        json.put("data", null);
+        //Gerando pagina da tabela
+        Page<Promocao> page = queryBy(repository, pageable);
+
+        json.put("draw", draw);
+        json.put("recordsTotal", page.getTotalElements());
+        json.put("recordsFiltered", page.getTotalElements());
+        json.put("data", page.getContent());
 
         return json;
+    }
+
+    private Page<Promocao> queryBy(PromocaoRepository repository, Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     private Sort.Direction orderBy(HttpServletRequest request) {
