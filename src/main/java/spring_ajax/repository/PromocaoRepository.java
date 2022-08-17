@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import spring_ajax.domain.Promocao;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface PromocaoRepository extends JpaRepository<Promocao, Long> {
@@ -36,4 +37,8 @@ public interface PromocaoRepository extends JpaRepository<Promocao, Long> {
             "p.site like %:search% or " +
             "p.categoria.titulo like %:search%")
     Page<Promocao> findByTituloOrSiteOrCategoria(@Param("search") String search, Pageable pageRequest);
+
+    @Transactional(readOnly = true)
+    @Query("SELECT p FROM Promocao p WHERE p.preco = :preco")
+    Page<Promocao> findByPreco(@Param("preco") BigDecimal preco, Pageable pageable);
 }

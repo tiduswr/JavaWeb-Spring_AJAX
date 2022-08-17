@@ -8,6 +8,7 @@ import spring_ajax.domain.Promocao;
 import spring_ajax.repository.PromocaoRepository;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -50,8 +51,17 @@ public class PromocaoDataTablesService {
     }
 
     private Page<Promocao> queryBy(String search, PromocaoRepository repository, Pageable pageable) {
-        if(search.isEmpty()) return repository.findAll(pageable);
-        return repository.findByTituloOrSiteOrCategoria(search, pageable);
+        if(search.isEmpty()){
+            //Busca tudo
+            return repository.findAll(pageable);
+        }else if(search.matches("^[0-9]+([.,][0-9]{2})?$")){
+            //Busca por preço
+            search = search.replace(",", ".");
+            return repository.findByPreco(new BigDecimal(search), pageable);
+        }else{
+            //Busca por Titulo, Site ou Categoria
+            return repository.findByTituloOrSiteOrCategoria(search, pageable);
+        }
     }
 
     private Sort.Direction orderBy(HttpServletRequest request) {

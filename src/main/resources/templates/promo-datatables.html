@@ -22,8 +22,9 @@
 		      <th scope="col">Categoria</th>
 		    </tr>
 		  </thead>
-		</table>
-        
+		</table>	
+        <script th:replace="promo-datatables-modal :: modal-form"></script>
+		<script th:replace="promo-datatables-modal-del :: modal-delete"></script>
 	</div>
 
 	<script th:src="@{/js/promo-datatables.js}" th:fragment="js"></script>
