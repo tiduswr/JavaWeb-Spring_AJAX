@@ -1,6 +1,9 @@
+//Datatable var
+var table = null;
+
 $(document).ready(function () {
     moment.locale("pt-br");
-    $("#table-server").DataTable({
+    table = $("#table-server").DataTable({
         processing: true,
         serverSide: true,
         responsive: true,
@@ -30,24 +33,62 @@ $(document).ready(function () {
                 attr: {
                     id: "btn-editar",
                     type: "button"
-                }
+                },
+                enabled: false
             },
             {
                 text: "Excluir",
                 attr: {
                     id: "btn-excluir",
                     type: "button"
-                }
+                },
+                enabled: false
             }
         ]
     });    
 });
 
-$("#table-server tbody").on("click", "tr", function(){
+//Desabilita botões ao ordenar
+$("#table-server thead").on("click", "tr", function () {
+    table.buttons().disable();
+});
+
+//Habilita/Desabilita botões ao selecionar linhas
+$("body").on("click", "#table-server tbody tr", function(){
     if($(this).hasClass("selected")){
         $(this).removeClass("selected");
+        table.buttons().disable();
     }else{
         $("tr.selected").removeClass("selected");
         $(this).addClass("selected");
+        table.buttons().enable();
     }
 });
+
+//Ação do botão editar
+$("body").on("click", "#btn-editar", function(){
+    if(isSelectedRow()){
+        var id = getPromoId();
+        $("#modal-form").modal("show");
+    }
+});
+
+//Ação do botão editar
+$("body").on("click", "#btn-excluir", function(){
+    if(isSelectedRow()){
+        var id = getPromoId();
+        $("#modal-delete").modal("show");
+    }
+});
+
+
+//################################## FUNCTIONS
+
+function getPromoId(){
+    return table.row(table.$("tr.selected")).data().id;
+}
+
+function isSelectedRow(){
+    var trow = table.row(table.$("tr.selected"));
+    return trow.data() !== undefined;
+}
