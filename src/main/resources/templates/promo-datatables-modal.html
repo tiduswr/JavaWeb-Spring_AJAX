@@ -21,21 +21,23 @@
 				</div>
 				<div class="modal-body">
 					<form id="form-edit-promo" action="#">					
-						<div class="form-group">
-							<label for="edt_titulo">Título da Oferta</label> <input
-								type="text" class="form-control" id="edt_titulo" name="titulo" />
-							<div id="error-titulo"></div>
+						<div class="row">
+							<div class="col mb-3">
+								<label for="edt_titulo">Título da Oferta</label> <input
+									type="text" class="form-control" id="edt_titulo" name="titulo" />
+								<div id="error-titulo"></div>
+							</div>
 						</div>
-						<div class="form-row">
-							<div class="col-sm-7">
-								<div class="form-group">
+						<div class="row">
+							<div class="col">
+								<div class="mb-3">
 									<label for="edt_preco">Preço da Oferta</label> <input
 										type="text" class="form-control" id="edt_preco" name="preco"
 										placeholder="ex.: 59,99" data-mask="#.##0,00" 
 										data-mask-reverse="true" />
 									<div id="error-preco" class=""></div>
 								</div>
-								<div class="form-group">
+								<div class="mb-3">
 									<label for="edt_categoria">Categoria do Produto</label> <select
 										id="edt_categoria" name="categoria" class="form-control">
 										<option value="">Selecione</option>
@@ -44,20 +46,20 @@
 									</select>
 									<div id="error-categoria"></div>
 								</div>
-								<div class="form-group">
+								<div class="mb-3">
 									<label for="edt_descricao">Descrição da Oferta</label>
 									<textarea class="form-control" id="edt_descricao"
 										name="descricao"
 										placeholder="Algo sobre a promoção ou produto..."></textarea>
 								</div>
-								<div class="form-group">
+								<div class="mb-3">
 									<label for="edt_linkImagem">Nova Imagem</label> <input
 										type="url" class="form-control" id="edt_linkImagem" name="linkImagem" placeholder="http://..."/>
 									<div id="error-linkImagem" class=""></div>
 								</div>
 							</div>
-							<div class="col sm-5">
-								<div class="card" style="width: 18rem;">
+							<div class="col">
+								<div class="card">
 									<div class="card-header">Imagem</div>
 									<span class="mx-auto" id="loader-img"></span> <img
 										id="edt_imagem" class="card-img-top"

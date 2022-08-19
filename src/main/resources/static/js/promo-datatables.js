@@ -69,18 +69,53 @@ $("body").on("click", "#table-server tbody tr", function(){
 $("body").on("click", "#btn-editar", function(){
     if(isSelectedRow()){
         var id = getPromoId();
-        $("#modal-form").modal("show");
+
+        $.ajax({
+            method: "GET",
+            url: "/promocao/edit/" + id,
+            beforeSend: function(){
+                $("#modal-form").modal("show");
+            },
+            success: function(data){
+                $("#edt_id").val(data.id);
+                $("#edt_site").text(data.site);
+                $("#edt_titulo").val(data.titulo);
+                $("#edt_descricao").val(data.descricao);
+                $("#edt_preco").val(data.preco.toLocaleString("pt-br", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }));
+                $("#edt_categoria").val(data.categoria.id);
+                $("#edt_linkImagem").val(data.linkImagem);
+                $("#edt_imagem").attr("src", data.linkImagem);
+            },
+            error: function(){
+                alert("Ops... Ocorreu um erro, tente mais tarde!");
+            }
+        });
     }
 });
 
-//Ação do botão editar
+//Ação do botão excluir
 $("body").on("click", "#btn-excluir", function(){
     if(isSelectedRow()){
-        var id = getPromoId();
         $("#modal-delete").modal("show");
     }
 });
-
+$("#btn-del-modal").on("click", function(){
+    var id = getPromoId();
+    $.ajax({
+        method: "GET",
+        url: "/promocao/delete/" + id,
+        success: function(){
+            $("#modal-delete").modal("hide");
+            table.ajax.reload();
+        },
+        error: function(){
+            alert("Ops... Ocorreu um erro, tente mais tarde!");
+        }
+    });
+});
 
 //################################## FUNCTIONS
 

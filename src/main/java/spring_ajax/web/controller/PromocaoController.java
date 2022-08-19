@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/promocao")
@@ -45,6 +46,18 @@ public class PromocaoController {
     public ResponseEntity<?> datatables(HttpServletRequest request){
         Map<String, Object> data = new PromocaoDataTablesService().execute(promoRepository, request);
         return ResponseEntity.ok(data);
+    }
+
+    @GetMapping("/delete/{id}")
+    public ResponseEntity<?> excluirPromocao(@PathVariable("id") Long id){
+        promoRepository.deleteById(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/edit/{id}")
+    public ResponseEntity<?> preEditarPromocao(@PathVariable("id") Long id){
+        Optional<Promocao> promo = promoRepository.findById(id);
+        return promo.isPresent() ? ResponseEntity.ok(promo.get()) : ResponseEntity.notFound().build();
     }
 
     @GetMapping("/list")
