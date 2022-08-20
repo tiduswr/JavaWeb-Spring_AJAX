@@ -11,6 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import spring_ajax.domain.Categoria;
 import spring_ajax.domain.Promocao;
+import spring_ajax.dto.PromocaoDTO;
 import spring_ajax.repository.CategoriaRepository;
 import spring_ajax.repository.PromocaoRepository;
 import spring_ajax.service.PromocaoDataTablesService;
@@ -22,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/promocao")
@@ -58,6 +60,32 @@ public class PromocaoController {
     public ResponseEntity<?> preEditarPromocao(@PathVariable("id") Long id){
         Optional<Promocao> promo = promoRepository.findById(id);
         return promo.isPresent() ? ResponseEntity.ok(promo.get()) : ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/edit")
+    public ResponseEntity<?> editarPromocao(@Valid PromocaoDTO dto, BindingResult result){
+        if(result.hasErrors()){
+            Map<String, String> errors = result.getFieldErrors()
+                    .stream()
+                    .collect(Collectors
+                            .toMap(e -> e.getField(), e -> e.getDefaultMessage()));
+            return ResponseEntity.unprocessableEntity().body(errors);
+        }
+
+        Optional<Promocao> promoOpt = promoRepository.findById(dto.getId());
+        if(!promoOpt.isPresent()) return ResponseEntity.notFound().build();
+
+        Promocao promo = promoOpt.get();
+
+        promo.setCategoria(dto.getCategoria());
+        promo.setDescricao(dto.getDescricao());
+        promo.setLinkImagem(dto.getLinkImagem());
+        promo.setPreco(dto.getPreco());
+        promo.setTitulo(dto.getTitulo());
+
+        promoRepository.save(promo);
+
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/list")

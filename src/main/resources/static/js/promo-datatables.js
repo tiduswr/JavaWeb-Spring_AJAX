@@ -74,20 +74,11 @@ $("body").on("click", "#btn-editar", function(){
             method: "GET",
             url: "/promocao/edit/" + id,
             beforeSend: function(){
+                cleanFieldErrorsPromoAddPage();
                 $("#modal-form").modal("show");
             },
             success: function(data){
-                $("#edt_id").val(data.id);
-                $("#edt_site").text(data.site);
-                $("#edt_titulo").val(data.titulo);
-                $("#edt_descricao").val(data.descricao);
-                $("#edt_preco").val(data.preco.toLocaleString("pt-br", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                }));
-                $("#edt_categoria").val(data.categoria.id);
-                $("#edt_linkImagem").val(data.linkImagem);
-                $("#edt_imagem").attr("src", data.linkImagem);
+                loadPromocaoOnModal(data)
             },
             error: function(){
                 alert("Ops... Ocorreu um erro, tente mais tarde!");
@@ -96,12 +87,44 @@ $("body").on("click", "#btn-editar", function(){
     }
 });
 
+$("#btn-edit-modal").on("click", function(){
+    var promo = createPromocaoDTO();
+
+    $.ajax({
+        method: "POST",
+        url: "/promocao/edit",
+        data : promo,
+        beforeSend: function () {
+            cleanFieldErrorsPromoAddPage();
+        },
+        success: function(){
+            $("#modal-form").modal("hide");
+            table.ajax.reload();
+        },
+        statusCode: {
+            422: function(xhr){
+                configPromoAddErrorFields(xhr);
+            }
+        }
+    });
+
+});
+
+//Altera o campo da imagem do Modal de edição
+$("#edt_linkImagem").on("change", function(){
+    var link = $(this).val();
+
+    $("#edt_imagem").attr("src", link);
+
+});
+
 //Ação do botão excluir
 $("body").on("click", "#btn-excluir", function(){
     if(isSelectedRow()){
         $("#modal-delete").modal("show");
     }
 });
+
 $("#btn-del-modal").on("click", function(){
     var id = getPromoId();
     $.ajax({
@@ -118,6 +141,48 @@ $("#btn-del-modal").on("click", function(){
 });
 
 //################################## FUNCTIONS
+
+function configPromoAddErrorFields(xhr){
+    var errors = $.parseJSON(xhr.responseText);
+    $.each(errors, function(key, val){
+        $("#edt_"+key).addClass("is-invalid");
+        $("#error-"+key)
+            .addClass("invalid-feedback")
+            .append("<span class='error-span'>" + val + "</span>");
+    })
+}
+
+function loadPromocaoOnModal(data){
+    $("#edt_id").val(data.id);
+    $("#edt_site").text(data.site);
+    $("#edt_titulo").val(data.titulo);
+    $("#edt_descricao").val(data.descricao);
+    $("#edt_preco").val(data.preco.toLocaleString("pt-br", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }));
+    $("#edt_categoria").val(data.categoria.id);
+    $("#edt_linkImagem").val(data.linkImagem);
+    $("#edt_imagem").attr("src", data.linkImagem);
+}
+
+function createPromocaoDTO(){
+    var promo = {};
+    promo.id = $("#edt_id").val();
+    promo.descricao = $("#edt_descricao").val();
+    promo.preco = $("#edt_preco").val();
+    promo.titulo = $("#edt_titulo").val();
+    promo.categoria = $("#edt_categoria").val();
+    promo.linkImagem = $("#edt_linkImagem").val();
+    return promo;
+}
+
+function cleanFieldErrorsPromoAddPage(){
+    //Removendo mensagens de erro
+    $("span").closest(".error-span").remove();
+    //Remover as Bordas vermelhas
+    $(".is-invalid").removeClass("is-invalid");
+}
 
 function getPromoId(){
     return table.row(table.$("tr.selected")).data().id;
